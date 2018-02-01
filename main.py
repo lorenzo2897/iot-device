@@ -1,10 +1,12 @@
 from machine import Pin
 from sensors.rgb import RGB
 from sensors.temperature import Temperature
+from sensors.servo import Servo
 import utime
 
 rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(16, Pin.OUT))
 temp = Temperature(sda=Pin(4), scl=Pin(5))
+servo = Servo(Pin(12))
 
 
 def main():
