@@ -32,7 +32,7 @@ class IotClient:
 	async def process_msgs(self):
 		while True:
 			self.client.check_msg()
-			await asyncio.sleep(5)
+			await asyncio.sleep(2)
 
 	def callback(self, topic, msg):
 		if topic == b"commands":
