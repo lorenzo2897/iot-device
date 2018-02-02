@@ -17,6 +17,7 @@ class IotClient:
 		self.abort = abort
 		self.update_settings = update_settings
 		self.loop = asyncio.get_event_loop()
+		self.started = False
 
 	def __exit__(self, exc_type, exc_value, traceback):
 		self.client.loop_stop()
@@ -37,14 +38,21 @@ class IotClient:
 	def callback(self, topic, msg):
 		if topic == b"commands":
 			if msg == b"make_tea":
-				self.loop.create_task(self.make_tea())
+				if not self.started:
+					self.started = True
+					self.loop.create_task(self.__manage_tea())
 			elif msg == b"abort":
 				self.abort()
+				self.started = False
 			elif msg == b"stats":
 				self.client.publish(b"stats", json.dumps(self.stats()).encode())
 		elif topic == b"set":
 			settings = json.loads(msg.decode())
 			self.update_settings(settings)
+
+	async def __manage_tea(self):
+		await self.make_tea()
+		self.started = False
 
 	def test(self, topic='Debug', message='Hello'):
 		self.client.publish(topic.encode(), message.encode())
