@@ -47,4 +47,4 @@ class IotClient:
 			self.update_settings(settings)
 
 	def test(self, topic='Debug', message='Hello'):
-		self.client.publish(topic, message)
+		self.client.publish(topic.encode(), message.encode())
