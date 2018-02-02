@@ -31,5 +31,6 @@ def main():
 	client.begin()
 
 
+status_led.on()  # active-low
 #if __name__ == '__main__':
 #	main()
