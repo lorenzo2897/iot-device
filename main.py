@@ -1,4 +1,5 @@
 from mqtt.MQTTembedded import IotClient
+from tea import Tea
 from machine import Pin
 import network
 import utime
@@ -25,12 +26,13 @@ def activate_network():
 
 
 def main():
+	tea_maker = Tea()
 	status_led.on()  # active-low
 	activate_network()
-	client = IotClient("silvestri.io", stats, make_tea, abort, update_settings)
+	client = IotClient("silvestri.io", tea_maker.stats, tea_maker.make_tea, tea_maker.abort, tea_maker.update_settings)
 	client.begin()
 
 
 status_led.on()  # active-low
-#if __name__ == '__main__':
-#	main()
+if __name__ == '__main__':
+	main()
