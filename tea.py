@@ -5,6 +5,7 @@ from sensors.temperature import Temperature
 
 import uasyncio as asyncio
 
+
 class Tea:
 	def __init__(self):
 		self.concentration = 0.50
@@ -14,18 +15,24 @@ class Tea:
 		self.temp = Temperature(sda=Pin(4), scl=Pin(5))
 		self.servo = Servo(Pin(12))
 
-	def stats(self):
-		print("stats requested")
-
 		self.rgb.begin()
+
+	def stats(self):
+		print("sending stats")
 
 		tea_concentration, _, _, _ = self.rgb.read_color()
 		water_temperature = self.temp.read_temperature()
 
 		data = {
 			"state": self.state,
-			"water_temperature": water_temperature,
-			"tea_concentration": tea_concentration
+
+			"settings_temperature": 0,
+			"settings_concentration": 0,
+
+			"boiler_temperature": 0,
+			"tea_temperature": water_temperature,
+			"tea_concentration": tea_concentration,
+			"servo_position": self.servo.get_position()
 		}
 
 		return data

@@ -27,8 +27,12 @@ class IotClient:
 		self.loop.create_task(self.process_msgs())
 		self.loop.run_forever()
 
-	def push_notification(self, content):
-		self.client.publish(b"push", content.encode())
+	def push_notification(self, data):
+		"""
+		Publish a push notification to connected devices with the state of the teapot
+		:param data: string->string Python map of things to send
+		"""
+		self.client.publish(b"push", json.dumps(data).encode())
 
 	async def process_msgs(self):
 		while True:
@@ -45,7 +49,7 @@ class IotClient:
 				self.abort()
 				self.started = False
 			elif msg == b"stats":
-				self.client.publish(b"stats", json.dumps(self.stats()).encode())
+				self.push_notification(self.stats())
 		elif topic == b"set":
 			settings = json.loads(msg.decode())
 			self.update_settings(settings)
