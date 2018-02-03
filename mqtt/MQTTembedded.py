@@ -12,6 +12,7 @@ class IotClient:
 		self.client.connect()
 		self.client.subscribe(b"commands")
 		self.client.subscribe(b"set")
+		self.client.subscribe(b"start")
 		self.stats = stats
 		self.make_tea = make_tea
 		self.abort = abort
@@ -41,18 +42,22 @@ class IotClient:
 
 	def callback(self, topic, msg):
 		if topic == b"commands":
-			if msg == b"make_tea":
-				if not self.started:
-					self.started = True
-					self.loop.create_task(self.__manage_tea())
-			elif msg == b"abort":
+			if msg == b"abort":
 				self.abort()
 				self.started = False
 			elif msg == b"stats":
 				self.push_notification(self.stats())
+
 		elif topic == b"set":
 			settings = json.loads(msg.decode())
 			self.update_settings(settings)
+
+		elif topic == b"start":
+			settings = json.loads(msg.decode())
+			self.update_settings(settings)
+			if not self.started:
+				self.started = True
+				self.loop.create_task(self.__manage_tea())
 
 	async def __manage_tea(self):
 		await self.make_tea()
