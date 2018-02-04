@@ -7,6 +7,8 @@ import uasyncio as asyncio
 
 
 class Tea:
+	send_push = None
+
 	def __init__(self):
 		self.concentration = 0.50
 		self.temperature = 80
@@ -26,8 +28,8 @@ class Tea:
 		data = {
 			"state": self.state,
 
-			"settings_temperature": 0,
-			"settings_concentration": 0,
+			"settings_temperature": self.temperature,
+			"settings_concentration": self.concentration,
 
 			"boiler_temperature": 0,
 			"tea_temperature": water_temperature,
@@ -38,33 +40,76 @@ class Tea:
 		return data
 
 	async def make_tea(self):
-		while True:
-			print("started")
-			await asyncio.sleep(5)
+		print("started")
 
-		self.state = 'boiling_water'
+		# start heating, wait until boiling
+		self.state = 'boiling'
+		self.send_push(self.stats())
 
-		#start heating, wait until boiling
+		await asyncio.sleep(4)
 
-		self.state = 'pumping_water'
+		# pump water into cup
+		if self.state == 'aborting':
+			self.reset_all()
+			return
+		self.state = 'pumping'
+		self.send_push(self.stats())
 
-		#pump water into cup
+		await asyncio.sleep(4)
 
-		#lower tea-bag
+		# lower tea-bag
+		if self.state == 'aborting':
+			self.reset_all()
+			return
+		self.state = 'lowering'
+		self.send_push(self.stats())
 
-		self.state = 'dissolving'
+		await asyncio.sleep(4)
 
-		#remove tea-bag when concentration wanted is obtained
+		# wait for correct concentration
+		if self.state == 'aborting':
+			self.reset_all()
+			return
+		self.state = 'brewing'
+		self.send_push(self.stats())
 
+		await asyncio.sleep(4)
+
+		# remove tea-bag
+		if self.state == 'aborting':
+			self.reset_all()
+			return
 		self.state = 'cooling'
+		self.send_push(self.stats())
 
-		#wait until temperature wanted is obtained and notify user when done
+		await asyncio.sleep(4)
 
+		# wait until temperature wanted is obtained
+		if self.state == 'aborting':
+			self.reset_all()
+			return
+		self.state = 'cooling'
+		self.send_push(self.stats())
+
+		await asyncio.sleep(4)
+
+		# notify user when done
 		self.state = 'done'
+		self.send_push(self.stats())
 
 	def abort(self):
-		print("aborted")
+		if self.state == 'done':
+			self.state = 'ready'
+			print("ready")
+			return
+
+		self.state = 'aborting'
+		print("aborting")
 
 	def update_settings(self, settings):
 		self.temperature = settings['temperature']
 		self.concentration = settings['concentration']
+
+	def reset_all(self):
+		# make sure everything is off and back where it should be
+		self.state = 'ready'

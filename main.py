@@ -30,6 +30,7 @@ def main():
 	status_led.on()  # active-low
 	activate_network()
 	client = IotClient("silvestri.io", tea_maker.stats, tea_maker.make_tea, tea_maker.abort, tea_maker.update_settings)
+	tea_maker.send_push = client.push_notification
 	client.begin()
 
 
