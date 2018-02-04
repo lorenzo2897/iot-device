@@ -79,7 +79,7 @@ class Tea:
 		if self.state == 'aborting':
 			self.reset_all()
 			return
-		self.state = 'cooling'
+		self.state = 'raising'
 		self.send_push(self.stats())
 
 		await asyncio.sleep(4)
