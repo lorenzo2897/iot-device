@@ -99,12 +99,10 @@ class Tea:
 
 	def abort(self):
 		if self.state == 'done':
-			self.state = 'ready'
-			print("ready")
-			return
-
-		self.state = 'aborting'
-		print("aborting")
+			self.reset_all()
+		else:
+			self.state = 'aborting'
+			print("aborting")
 
 	def update_settings(self, settings):
 		self.temperature = settings['temperature']
@@ -113,3 +111,5 @@ class Tea:
 	def reset_all(self):
 		# make sure everything is off and back where it should be
 		self.state = 'ready'
+		self.send_push(self.stats())
+		print("ready")
