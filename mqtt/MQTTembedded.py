@@ -43,6 +43,8 @@ class IotClient:
 	def callback(self, topic, msg):
 		if topic == b"commands":
 			if msg == b"abort":
+				if not self.started:
+					return
 				self.abort()
 				self.started = False
 			elif msg == b"stats":

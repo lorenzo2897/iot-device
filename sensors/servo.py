@@ -11,7 +11,7 @@ class Servo:
 
 	def set_position(self, p):
 		self.__position = max(0.0, min(1.0, p))
-		duty = int(30.0 + self.__position * 90.0)
+		duty = int(35.0 + self.__position * 80.0)
 		self.__pwm.duty(duty)
 
 	def get_position(self):

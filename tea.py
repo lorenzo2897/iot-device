@@ -9,21 +9,32 @@ import uasyncio as asyncio
 class Tea:
 	send_push = None
 
+	__SERVO_LOWERED = 0.9
+	__SERVO_RAISED = 0.3
+
 	def __init__(self):
 		self.concentration = 0.50
 		self.temperature = 80
 		self.state = 'ready'
-		self.rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(16, Pin.OUT))
-		self.temp = Temperature(sda=Pin(4), scl=Pin(5))
+		self.rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
+		self.boiler_temp = Temperature(sda=Pin(4), scl=Pin(5))  # 13 16
+		self.tea_temp = Temperature(sda=Pin(4), scl=Pin(5))
 		self.servo = Servo(Pin(12))
+		self.boiler = Pin(14, Pin.OUT)
+		self.pump = Pin(15, Pin.OUT)
 
 		self.rgb.begin()
+		self.rgb.set_led(0)
+		self.boiler.off()
+		self.pump.off()
+		self.servo.set_position(self.__SERVO_RAISED)
 
 	def stats(self):
 		print("sending stats")
 
 		tea_concentration, _, _, _ = self.rgb.read_color()
-		water_temperature = self.temp.read_temperature()
+		boiler_temperature = self.boiler_temp.read_temperature()
+		tea_temperature = self.tea_temp.read_temperature()
 
 		data = {
 			"state": self.state,
@@ -31,8 +42,8 @@ class Tea:
 			"settings_temperature": self.temperature,
 			"settings_concentration": self.concentration,
 
-			"boiler_temperature": 0,
-			"tea_temperature": water_temperature,
+			"boiler_temperature": boiler_temperature,
+			"tea_temperature": tea_temperature,
 			"tea_concentration": tea_concentration,
 			"servo_position": self.servo.get_position()
 		}
@@ -41,50 +52,62 @@ class Tea:
 
 	async def make_tea(self):
 		print("started")
+		self.boiler.off()
+		self.pump.off()
+		self.rgb.set_led(0)
+		self.servo.set_position(self.__SERVO_RAISED)
 
-		# start heating, wait until boiling
+		# ============== start heating, wait until boiling ==============
 		self.state = 'boiling'
 		self.send_push(self.stats())
 
+		self.boiler.on()
 		await asyncio.sleep(4)
+		self.boiler.off()
 
-		# pump water into cup
+		# ===================== pump water into cup =====================
 		if self.state == 'aborting':
 			self.reset_all()
 			return
 		self.state = 'pumping'
 		self.send_push(self.stats())
 
+		self.pump.on()
 		await asyncio.sleep(4)
+		self.pump.off()
 
-		# lower tea-bag
+		# ======================== lower tea-bag ========================
 		if self.state == 'aborting':
 			self.reset_all()
 			return
 		self.state = 'lowering'
 		self.send_push(self.stats())
 
-		await asyncio.sleep(4)
+		self.servo.set_position(self.__SERVO_LOWERED)
+		await asyncio.sleep(3)
 
-		# wait for correct concentration
+		# =============== wait for correct concentration ================
 		if self.state == 'aborting':
 			self.reset_all()
 			return
 		self.state = 'brewing'
 		self.send_push(self.stats())
 
+		self.rgb.set_led(1)
 		await asyncio.sleep(4)
+		self.rgb.set_led(0)
 
-		# remove tea-bag
+		# ======================= remove tea-bag ========================
 		if self.state == 'aborting':
 			self.reset_all()
 			return
 		self.state = 'raising'
 		self.send_push(self.stats())
 
-		await asyncio.sleep(4)
+		self.servo.set_position(self.__SERVO_RAISED)
+		await asyncio.sleep(3)
 
-		# wait until temperature wanted is obtained
+		# ========== wait until temperature wanted is obtained ==========
 		if self.state == 'aborting':
 			self.reset_all()
 			return
@@ -93,9 +116,11 @@ class Tea:
 
 		await asyncio.sleep(4)
 
-		# notify user when done
+		# ==================== notify user when done ====================
 		self.state = 'done'
-		self.send_push(self.stats())
+		stats = self.stats()
+		stats["notify"] = True
+		self.send_push(stats)
 
 	def abort(self):
 		if self.state == 'done':
@@ -110,6 +135,10 @@ class Tea:
 
 	def reset_all(self):
 		# make sure everything is off and back where it should be
+		self.boiler.off()
+		self.pump.off()
+		self.rgb.set_led(0)
+		self.servo.set_position(self.__SERVO_RAISED)
 		self.state = 'ready'
 		self.send_push(self.stats())
 		print("ready")
