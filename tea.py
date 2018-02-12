@@ -1,7 +1,7 @@
 from machine import Pin
-from sensors.servo import Servo
-from sensors.rgb import RGB
-from sensors.temperature import Temperature
+from drivers.servo import Servo
+from drivers.rgb import RGB
+from drivers.temperature import Temperature
 
 import uasyncio as asyncio
 
