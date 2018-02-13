@@ -5,7 +5,7 @@ class Infrared:
 	BASE_I2C_ADDRESS = 0x40
 	__i2c_address = BASE_I2C_ADDRESS
 
-	def __init__(self, sda, scl, addr=BASE_I2C_ADDRESS, samplerate=16):
+	def __init__(self, sda, scl, addr=BASE_I2C_ADDRESS, samplerate=8):
 		# initialise the I2C port
 		self.__i2c = I2C(scl=scl, sda=sda, freq=100000)
 		self.__i2c_address = addr
@@ -28,8 +28,9 @@ class Infrared:
 	def set_rate(self, rate):
 		TMP007_CONFIG = 0x02
 		TMP007_CFG_MODEON = 0x1000
+		TMP007_CFG_TRANSC = 0x0040
 		TMP007_CFG_SAMPLE = {1: 0x0000, 2: 0x0200, 4: 0x0400, 8: 0x0600, 16: 0x0800}
-		self.__write16(TMP007_CONFIG, TMP007_CFG_MODEON | TMP007_CFG_SAMPLE[rate])  # TODO check datasheet
+		self.__write16(TMP007_CONFIG, TMP007_CFG_MODEON | TMP007_CFG_TRANSC | TMP007_CFG_SAMPLE[rate])
 
 	def get_die_temperature(self):
 		TMP007_TDIE = 0x01
