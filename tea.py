@@ -1,7 +1,7 @@
 from machine import Pin
 from drivers.servo import Servo
 from drivers.rgb import RGB
-from drivers.temperature import Temperature
+from drivers.infrared import Infrared
 
 import uasyncio as asyncio
 
@@ -17,8 +17,8 @@ class Tea:
 		self.temperature = 80
 		self.state = 'ready'
 		self.rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
-		self.boiler_temp = Temperature(sda=Pin(4), scl=Pin(5))  # 13 16
-		self.tea_temp = Temperature(sda=Pin(4), scl=Pin(5))
+		self.boiler_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)  # A0 = 0, A1 = 1
+		self.tea_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)  # A0 = 1, A1 = 1
 		self.servo = Servo(Pin(12))
 		self.boiler = Pin(14, Pin.OUT)
 		self.pump = Pin(15, Pin.OUT)
@@ -33,8 +33,8 @@ class Tea:
 		print("sending stats")
 
 		tea_concentration, _, _, _ = self.rgb.read_color()
-		boiler_temperature = self.boiler_temp.read_temperature()
-		tea_temperature = self.tea_temp.read_temperature()
+		boiler_temperature = self.boiler_temp.get_obj_temperature()
+		tea_temperature = self.tea_temp.get_obj_temperature()
 
 		data = {
 			"state": self.state,

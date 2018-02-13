@@ -1,8 +1,10 @@
 from mqtt.MQTTembedded import IotClient
-from tea import Tea
-from machine import Pin
 import network
 import utime
+
+# tests
+from drivers.infrared import Infrared
+from drivers.rgb import RGB
 
 from tea import *
 
@@ -34,6 +36,23 @@ def main():
 	client.begin()
 
 
+def test():
+	ir = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)
+	rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
+
+	rgb.begin()
+	rgb.set_led(1)
+
+	t = 0
+	while True:
+		temp = max(ir.get_obj_temperature(), ir.get_die_temperature())
+		col = rgb.read_color()[0]
+		print(t, temp, col, sep=",")
+		utime.sleep(1)
+		t += 1
+
+
 status_led.on()  # active-low
 if __name__ == '__main__':
+	# test()
 	main()
