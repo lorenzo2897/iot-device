@@ -37,7 +37,8 @@ def main():
 
 
 def test():
-	ir = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)
+	ir_b = Infrared(sda=Pin(4), scl=Pin(5), addr=0x41, samplerate=4)
+	ir_t = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)
 	rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
 
 	rgb.begin()
@@ -45,9 +46,10 @@ def test():
 
 	t = 0
 	while True:
-		temp = max(ir.get_obj_temperature(), ir.get_die_temperature())
+		temp_b = max(ir_b.get_obj_temperature(), ir_b.get_die_temperature())
+		temp_t = max(ir_t.get_obj_temperature(), ir_t.get_die_temperature())
 		col = rgb.read_color()[0]
-		print(t, temp, col, sep=",")
+		print(t, temp_b, temp_t, col, sep=",")
 		utime.sleep(1)
 		t += 1
 

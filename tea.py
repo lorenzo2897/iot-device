@@ -17,7 +17,7 @@ class Tea:
 		self.temperature = 80
 		self.state = 'ready'
 		self.rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
-		self.boiler_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)  # A0 = 0, A1 = 1
+		self.boiler_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x41, samplerate=4)  # A0 = 1, A1 = 0
 		self.tea_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)  # A0 = 1, A1 = 1
 		self.servo = Servo(Pin(12))
 		self.boiler = Pin(14, Pin.OUT)
