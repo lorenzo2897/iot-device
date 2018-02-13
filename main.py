@@ -49,12 +49,12 @@ def test():
 		temp_b = max(ir_b.get_obj_temperature(), ir_b.get_die_temperature())
 		temp_t = max(ir_t.get_obj_temperature(), ir_t.get_die_temperature())
 		col = rgb.read_color()[0]
-		print(t, temp_b, temp_t, col, sep=",")
+		print(t, temp_b, temp_t, col, sep="\t")
 		utime.sleep(1)
 		t += 1
 
 
 status_led.on()  # active-low
 if __name__ == '__main__':
-	# test()
+	test()
 	main()
