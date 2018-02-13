@@ -9,8 +9,8 @@ import uasyncio as asyncio
 class Tea:
 	send_push = None
 
-	__SERVO_LOWERED = 0.9
-	__SERVO_RAISED = 0.3
+	__SERVO_LOWERED = 0.6
+	__SERVO_RAISED = 0.45
 
 	def __init__(self):
 		self.concentration = 0.50
