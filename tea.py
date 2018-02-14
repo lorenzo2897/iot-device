@@ -133,10 +133,8 @@ class Tea:
 		print("colour sensor on")
 		start_time = utime.ticks_ms()
 		while utime.ticks_ms() < start_time + 1000 * timeout:
-			col1 = self.rgb.read_color()[0]
 			await asyncio.sleep(3)
-			col2 = self.rgb.read_color()[0]
-			col = (col1 + col2) / 2  # average of 2 readings
+			col = self.rgb.read_color()[0]
 			print("concentration reading is", col, "target is", target_concentration, "time left is", (start_time + 1000 * timeout - utime.ticks_ms()) / 1000)
 			if col < target_concentration:
 				break
