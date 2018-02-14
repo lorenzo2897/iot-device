@@ -69,7 +69,7 @@ class Tea:
 		while True:
 			temp = self.boiler_temp.read_temperature()
 			print("boiler temperature is", temp)
-			if temp is not None and temp > 90.0:
+			if temp is not None and temp > 80.0:  # change to taste
 				break
 			await asyncio.sleep(3)
 
@@ -87,7 +87,7 @@ class Tea:
 		await asyncio.sleep(2)
 		print("pump on")
 		self.pump.on()
-		await asyncio.sleep(4)  # TODO calibrate to pump
+		await asyncio.sleep(7)  # TODO calibrate to pump
 		self.pump.off()
 		print("pump off")
 		await asyncio.sleep(2)
