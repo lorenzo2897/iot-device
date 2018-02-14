@@ -43,3 +43,14 @@ class Infrared:
 		if raw & 0x1:
 			return 0
 		return (raw >> 2) * 0.03125
+
+	past_temperatures = []
+
+	def read_temperature(self):
+		temp = max(self.get_obj_temperature(), self.get_die_temperature())
+		if temp < 10 or temp > 101:
+			return None
+		else:
+			self.past_temperatures.append(temp)
+			self.past_temperatures = self.past_temperatures[-3:]
+			return sum(self.past_temperatures) / len(self.past_temperatures)

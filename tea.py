@@ -125,6 +125,7 @@ class Tea:
 	def abort(self):
 		if self.state == 'done':
 			self.reset_all()
+			self.state = 'ready'
 		else:
 			self.state = 'aborting'
 			print("aborting")

@@ -46,8 +46,8 @@ def test():
 
 	t = 0
 	while True:
-		temp_b = max(ir_b.get_obj_temperature(), ir_b.get_die_temperature())
-		temp_t = max(ir_t.get_obj_temperature(), ir_t.get_die_temperature())
+		temp_b = ir_b.read_temperature()
+		temp_t = ir_t.read_temperature()
 		col = rgb.read_color()[0]
 		print(t, temp_b, temp_t, col, sep="\t")
 		utime.sleep(1)
