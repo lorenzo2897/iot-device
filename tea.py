@@ -22,7 +22,7 @@ class Tea:
 		self.tea_temp = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)  # A0 = 1, A1 = 1
 		self.servo = Servo(Pin(12))
 		self.boiler = Pin(14, Pin.OUT)
-		self.pump = Pin(15, Pin.OUT)
+		self.pump = Pin(13, Pin.OUT)
 
 		self.rgb.begin()
 		self.rgb.set_led(0)
@@ -135,7 +135,7 @@ class Tea:
 		while utime.ticks_ms() < start_time + 1000 * timeout:
 			await asyncio.sleep(3)
 			col = self.rgb.read_color()[0]  # TODO improve accuracy
-			print("concentration reading is", col)
+			print("concentration reading is", col, "target is", target_concentration, "time left is", (start_time + 1000 * timeout - utime.ticks_ms()) / 1000)
 			if col < target_concentration:
 				break
 
