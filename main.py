@@ -62,6 +62,6 @@ def test():
 
 status_led.on()  # active-low
 if __name__ == '__main__':
-	pass
 	# setup()
-	# main()
+	main()
+	pass
