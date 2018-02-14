@@ -9,8 +9,8 @@ import uasyncio as asyncio
 class Tea:
 	send_push = None
 
-	__SERVO_LOWERED = 0.6
-	__SERVO_RAISED = 0.45
+	__SERVO_LOWERED = 0.60
+	__SERVO_RAISED = 0.36
 
 	def __init__(self):
 		self.concentration = 0.50
@@ -27,7 +27,7 @@ class Tea:
 		self.rgb.set_led(0)
 		self.boiler.off()
 		self.pump.off()
-		self.servo.set_position(self.__SERVO_RAISED)
+		self.servo.sweep(self.__SERVO_RAISED)
 
 	def stats(self):
 		print("sending stats")
@@ -83,8 +83,8 @@ class Tea:
 		self.state = 'lowering'
 		self.send_push(self.stats())
 
-		self.servo.set_position(self.__SERVO_LOWERED)
-		await asyncio.sleep(3)
+		self.servo.sweep(self.__SERVO_LOWERED)
+		await asyncio.sleep(2)
 
 		# =============== wait for correct concentration ================
 		if self.state == 'aborting':
@@ -104,8 +104,8 @@ class Tea:
 		self.state = 'raising'
 		self.send_push(self.stats())
 
-		self.servo.set_position(self.__SERVO_RAISED)
-		await asyncio.sleep(3)
+		self.servo.sweep(self.__SERVO_RAISED)
+		await asyncio.sleep(2)
 
 		# ========== wait until temperature wanted is obtained ==========
 		if self.state == 'aborting':
@@ -139,7 +139,7 @@ class Tea:
 		self.boiler.off()
 		self.pump.off()
 		self.rgb.set_led(0)
-		self.servo.set_position(self.__SERVO_RAISED)
+		self.servo.sweep(self.__SERVO_RAISED)
 		self.state = 'ready'
 		self.send_push(self.stats())
 		print("ready")

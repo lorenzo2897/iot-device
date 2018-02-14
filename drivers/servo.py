@@ -1,5 +1,5 @@
 from machine import PWM
-
+import utime
 
 class Servo:
 	__pwm = None
@@ -16,3 +16,13 @@ class Servo:
 
 	def get_position(self):
 		return self.__position
+
+	def sweep(self, p):
+		target = max(0.0, min(1.0, p))
+		current = self.__position
+		step = (target - current) / 20
+		for i in range(0, 20):
+			self.set_position(current + step * i)
+			utime.sleep_ms(100)
+
+		self.set_position(target)

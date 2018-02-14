@@ -36,13 +36,19 @@ def main():
 	client.begin()
 
 
-def test():
+def setup():
+	global servo, rgb, ir_b, ir_t
 	ir_b = Infrared(sda=Pin(4), scl=Pin(5), addr=0x41, samplerate=4)
 	ir_t = Infrared(sda=Pin(4), scl=Pin(5), addr=0x45, samplerate=4)
 	rgb = RGB(sda=Pin(4), scl=Pin(5), led=Pin(2, Pin.OUT))
+	servo = Servo(Pin(12), 0.4)
 
 	rgb.begin()
 	rgb.set_led(1)
+
+
+def test():
+	global servo, rgb, ir_b, ir_t
 
 	t = 0
 	while True:
@@ -56,5 +62,6 @@ def test():
 
 status_led.on()  # active-low
 if __name__ == '__main__':
-	test()
-	main()
+	pass
+	# setup()
+	# main()
