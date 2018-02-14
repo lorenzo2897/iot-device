@@ -87,7 +87,7 @@ class Tea:
 		await asyncio.sleep(2)
 		print("pump on")
 		self.pump.on()
-		await asyncio.sleep(7)  # TODO calibrate to pump
+		await asyncio.sleep(18)  # calibrated to pump
 		self.pump.off()
 		print("pump off")
 		await asyncio.sleep(2)
@@ -124,7 +124,7 @@ class Tea:
 		target_concentration = 500
 		timeout = 60
 		for key, value in concentrations.items():
-			if key - 0.05 > self.concentration:
+			if key - 0.05 < self.concentration < key + 0.05:
 				target_concentration = value[0]
 				timeout = value[1]
 
@@ -133,8 +133,10 @@ class Tea:
 		print("colour sensor on")
 		start_time = utime.ticks_ms()
 		while utime.ticks_ms() < start_time + 1000 * timeout:
+			col1 = self.rgb.read_color()[0]
 			await asyncio.sleep(3)
-			col = self.rgb.read_color()[0]  # TODO improve accuracy
+			col2 = self.rgb.read_color()[0]
+			col = (col1 + col2) / 2  # average of 2 readings
 			print("concentration reading is", col, "target is", target_concentration, "time left is", (start_time + 1000 * timeout - utime.ticks_ms()) / 1000)
 			if col < target_concentration:
 				break
